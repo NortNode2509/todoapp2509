@@ -1,0 +1,18 @@
+## Check health of the app
+GET http://localhost:8085/health
+
+
+### Get all todos
+GET http://localhost:8085/api/todo
+
+### POST one todo
+POST http://localhost:8085/api/todo
+Content-Type: application/json
+
+{
+    "description": "Sööda kassi",
+    "priority": 2,
+    "isDone": false
+}
+
+DELETE http://localhost:8085/api/todo/68d41fbf10790696c35ed63e
