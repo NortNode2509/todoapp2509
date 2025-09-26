@@ -56,5 +56,5 @@ export async function deleteTodo(id) {
   const todoCollection = await getDatabaseCollection('tasks')
   const result = await todoCollection.deleteOne({_id: ObjectId.createFromHexString(id)})
   console.log(result)
-  return result.deleteCount > 0
+  return result.deletedCount > 0
 }
