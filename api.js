@@ -1,10 +1,18 @@
 import express from "express"
-import {addTodo, getTodos} from "./model/model.js"
+import {addTodo, getTodos, deleteTodo} from "./model/model.js"
 
 export const api = express.Router()
 
 api.get('/todo', async (req, res) => {
-    res.json(await getTodos())
+    const todos = await getTodos()
+    res.json(todos.map((el) => {
+        return {
+            id: el.id,
+            description: el.description,
+            priority: el.priority,
+            isDone: el.status
+        }
+    }))
 })
 
 api.post('/todo', async (req, res) => {
@@ -17,5 +25,8 @@ api.post('/todo', async (req, res) => {
     res.status(201).end()
 })
 
-
-//TODO loo get.delete abil endpoint kustutamiseks id parameetri kasutamiseks  kasuta :id parameetrit
+api.delete('/todo/:id', async (req, res) => {
+    console.log("Kustutame ülesannet id-ga " + req.params.id)
+    const deleteSuccessful = await deleteTodo(req.params.id)
+    res.status(deleteSuccessful? 200: 406).end()
+})

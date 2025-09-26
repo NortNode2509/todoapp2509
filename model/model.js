@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb"
+import { MongoClient, ObjectId } from "mongodb"
 import dotenv from "dotenv"
 dotenv.config()
 
@@ -43,6 +43,18 @@ export async function addTodo({
 export async function getTodos() {
      const todoCollection = await getDatabaseCollection('tasks')
      const hikes = await todoCollection.find({}).toArray();
-     return hikes
+     
+     return hikes.map(el => {
+      const { _id,  ...todoWithoutId } = el;
+      todoWithoutId.id = el._id
+      return todoWithoutId;
+     })
 
+}
+
+export async function deleteTodo(id) {
+  const todoCollection = await getDatabaseCollection('tasks')
+  const result = await todoCollection.deleteOne({_id: ObjectId.createFromHexString(id)})
+  console.log(result)
+  return result.deleteCount > 0
 }

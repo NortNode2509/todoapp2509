@@ -10,9 +10,10 @@ POST http://localhost:8085/api/todo
 Content-Type: application/json
 
 {
-    "description": "Sööda kassi",
+    "description": "Sööda kassi2",
     "priority": 2,
     "isDone": false
 }
 
-DELETE http://localhost:8085/api/todo/68d41fbf10790696c35ed63e
+### DELETE on endpoint
+DELETE http://localhost:8085/api/todo/68d6ae9643f0db407eae0efb
