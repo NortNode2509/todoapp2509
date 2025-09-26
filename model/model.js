@@ -58,3 +58,22 @@ export async function deleteTodo(id) {
   console.log(result)
   return result.deletedCount > 0
 }
+
+export async function updateTodo(id, { description, priority, status }) {
+  const todoCollection = await getDatabaseCollection('tasks')
+  const updateFields = {}
+  if (typeof description !== 'undefined') updateFields.description = description
+  if (typeof priority !== 'undefined') updateFields.priority = priority
+  if (typeof status !== 'undefined') updateFields.status = status
+
+  if (Object.keys(updateFields).length === 0) {
+    return false
+  }
+
+  const result = await todoCollection.updateOne(
+    { _id: ObjectId.createFromHexString(id) },
+    { $set: updateFields }
+  )
+  console.log(result)
+  return result.matchedCount > 0 && result.modifiedCount >= 0
+}

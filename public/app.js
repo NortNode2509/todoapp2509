@@ -56,8 +56,16 @@ function renderTodos(todos) {
         colPriority.textContent = todo.priority ?? ''
 
         const colStatus = document.createElement('div')
-        colStatus.className = 'col col-md-2'
-        colStatus.textContent = todo.isDone ? 'Done' : 'Not done'
+        colStatus.className = 'col col-md-2 d-flex align-items-center gap-2'
+        const toggle = document.createElement('input')
+        toggle.type = 'checkbox'
+        toggle.className = 'form-check-input'
+        toggle.checked = !!todo.isDone
+        const statusLabel = document.createElement('span')
+        statusLabel.textContent = todo.isDone ? 'Done' : 'Not done'
+        toggle.addEventListener('change', () => handleToggleIsDone(row, statusLabel, toggle.checked))
+        colStatus.appendChild(toggle)
+        colStatus.appendChild(statusLabel)
 
         const colActions = document.createElement('div')
         colActions.className = 'col col-md-2 text-end'
@@ -72,6 +80,7 @@ function renderTodos(todos) {
         row.appendChild(colPriority)
         row.appendChild(colStatus)
         row.appendChild(colActions)
+        updateRowVisual(row, !!todo.isDone)
         fragment.appendChild(row)
     }
     listEl.appendChild(fragment)
@@ -85,6 +94,34 @@ async function handleDelete(id) {
         await fetchTodos()
     } catch (err) {
         setStatus('error', `Failed to delete: ${err.message}`)
+    }
+}
+
+function updateRowVisual(row, isDone) {
+    row.classList.toggle('bg-success-subtle', isDone)
+}
+
+async function handleToggleIsDone(row, statusLabelEl, newValue) {
+    const id = row?.dataset?.id
+    if (!id) return
+    // optimistic update
+    updateRowVisual(row, newValue)
+    statusLabelEl.textContent = newValue ? 'Done' : 'Not done'
+    try {
+        const res = await fetch(`/api/todo/${encodeURIComponent(id)}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isDone: newValue })
+        })
+        if (!res.ok) throw new Error(`Patch failed: ${res.status}`)
+    } catch (err) {
+        // revert UI on failure
+        updateRowVisual(row, !newValue)
+        statusLabelEl.textContent = !newValue ? 'Done' : 'Not done'
+        setStatus('error', `Failed to update: ${err.message}`)
+        // also flip the checkbox back
+        const checkbox = row.querySelector('input[type="checkbox"]')
+        if (checkbox) checkbox.checked = !newValue
     }
 }
 

@@ -17,3 +17,29 @@ Content-Type: application/json
 
 ### DELETE on endpoint
 DELETE http://localhost:8085/api/todo/68d6b6ee5c421870cfd6a30b
+
+### --- Flow: create, patch isDone, verify ---
+
+### 1) Create a new todo to update later
+POST http://localhost:8085/api/todo
+Content-Type: application/json
+
+{
+  "description": "Task to patch isDone",
+  "priority": "medium",
+  "isDone": false
+}
+
+### 2) Fetch all todos to locate the new task's id (field: id)
+GET http://localhost:8085/api/todo
+
+### 3) Replace <PUT_ID_HERE> with the id from step 2 and patch isDone=true
+PATCH http://localhost:8085/api/todo/68d6bb7cfead541a8a670029
+Content-Type: application/json
+
+{
+  "isDone": false
+}
+
+### 4) Verify the record is updated (isDone should be true for that id)
+GET http://localhost:8085/api/todo
