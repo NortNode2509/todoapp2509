@@ -95,6 +95,7 @@ Render the list of todo tasks on the front page using Bootstrap rows and columns
 ### PATCH Endpoint Flow (Description + Mermaid Diagram)
 When the user toggles a task's `isDone` state in the frontend, the app sends a `PATCH /api/todo/:id` request containing `{ isDone: boolean }`. The Express route in `api.js` maps `isDone` to the database field `status` and calls `updateTodo(id, { status })` in `model/model.js`. The model updates only the provided fields in MongoDB. The endpoint returns 200 on success, 406 on failure.
 
+
 ```mermaid
 sequenceDiagram
     participant U as User (Browser)
@@ -107,11 +108,11 @@ sequenceDiagram
     F->>A: PATCH /api/todo/:id { isDone }
     A->>A: Map isDone -> status
     A->>M: updateTodo(id, { status })
-    M->>DB: updateOne({_id}, {$set: {status}})
+    M->>DB: updateOne by _id, set status
     DB-->>M: matchedCount/modifiedCount
     M-->>A: updateSuccessful (boolean)
     A-->>F: 200 OK (if success) or 406 (if failure)
-    F->>F: Optimistically update UI; revert on error
+    F->>F: Optimistically update UI, revert on error
 ```
 
 
